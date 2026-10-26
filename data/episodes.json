@@ -1,0 +1,245 @@
+{
+  "series": [
+    {
+      "key": "bible",
+      "name": "Overview of the Bible",
+      "blurb": "What the Bible is, what the Gospel is, and how the whole story fits together."
+    },
+    {
+      "key": "apologetics",
+      "name": "Apologetics",
+      "blurb": "The big objections, taken seriously and answered from Scripture."
+    },
+    {
+      "key": "doctrine",
+      "name": "Christian Doctrine",
+      "blurb": "What Christians believe about God, Jesus, the church and ourselves, and why it matters."
+    },
+    {
+      "key": "living",
+      "name": "Christian Living",
+      "blurb": "Prayer, church, Bible reading, sharing your faith: following Jesus on an ordinary Tuesday."
+    },
+    {
+      "key": "sin",
+      "name": "Sin Series",
+      "blurb": "What sin is, and straight answers to the \"is it a sin?\" questions people actually ask."
+    },
+    {
+      "key": "worldview",
+      "name": "World View",
+      "blurb": "How the Christian faith compares with the beliefs around us."
+    },
+    {
+      "key": "armor",
+      "name": "Armor of God",
+      "blurb": "A walk through Ephesians 6 and the spiritual battle every believer is in."
+    },
+    {
+      "key": "guest",
+      "name": "Guest Conversations",
+      "blurb": "Friends of the show on calling, mission and living out the faith."
+    }
+  ],
+  "ignore": [],
+  "episodes": [
+    {
+      "youtube": "YJPN5kBDo1E",
+      "title": "Is drinking alcohol a sin?",
+      "series": "sin",
+      "number": 46
+    },
+    {
+      "youtube": "oZTXqUZ3A-c",
+      "title": "Is dancing a sin?",
+      "series": "sin",
+      "number": 44
+    },
+    {
+      "youtube": "3ClrSHaEpdQ",
+      "title": "Is pornography a sin?",
+      "series": "sin",
+      "number": 38
+    },
+    {
+      "youtube": "aShENMM-RW4",
+      "title": "Is lying a sin?",
+      "series": "sin",
+      "number": 36
+    },
+    {
+      "youtube": "oEpy-TD8ais",
+      "title": "Is getting a tattoo sinful?",
+      "series": "sin",
+      "number": 35
+    },
+    {
+      "youtube": "DGqRjHRpSFw",
+      "title": "Is abortion a sin?",
+      "series": "sin",
+      "number": 34
+    },
+    {
+      "youtube": "ldDMPqzFCls",
+      "title": "Is homosexuality a sin?",
+      "series": "sin",
+      "number": 33
+    },
+    {
+      "youtube": "PQD8kJVB5Ns",
+      "title": "What is sin?",
+      "series": "sin",
+      "number": 32
+    },
+    {
+      "youtube": "EDYm0ktLFhw",
+      "title": "What is the Great Commission?",
+      "series": "living",
+      "number": 31
+    },
+    {
+      "youtube": "w-CGuKqNXlk",
+      "title": "How should Christians view the death penalty?",
+      "series": "doctrine",
+      "number": 30
+    },
+    {
+      "youtube": "AOiFUaNPYeI",
+      "title": "Why did Jesus have to die?",
+      "series": "doctrine",
+      "number": 26
+    },
+    {
+      "youtube": "v9kzU80togc",
+      "title": "How do I pray?",
+      "series": "living",
+      "number": 22
+    },
+    {
+      "youtube": "1H0efKwkAf0",
+      "title": "What does it mean to be created in the image of God?",
+      "series": "doctrine",
+      "number": 21
+    },
+    {
+      "youtube": "iU_38JK5stY",
+      "title": "How do I read the Bible?",
+      "series": "living",
+      "number": 20
+    },
+    {
+      "youtube": "NoeyJIJOX4s",
+      "title": "How can I know that I am a Christian?",
+      "series": "living",
+      "number": 12
+    },
+    {
+      "youtube": "mhzyitrACzc",
+      "title": "Is it important for Christians to go to church?",
+      "series": "living",
+      "number": 11
+    },
+    {
+      "youtube": "4eEOks-QJNI",
+      "title": "How should I respond to the election as a Christian?",
+      "series": "living",
+      "number": 10
+    },
+    {
+      "youtube": "4xjlJLRZazU",
+      "title": "Are Mormons and Jehovah's Witnesses Christians?",
+      "series": "worldview",
+      "number": 8
+    },
+    {
+      "youtube": "XLD8GOiSGQY",
+      "title": "How do I share the Gospel?",
+      "series": "living",
+      "number": 7
+    },
+    {
+      "youtube": "afMlbS0lxIU",
+      "title": "What is the Gospel?",
+      "series": "bible",
+      "number": 6
+    },
+    {
+      "youtube": "qlnx0-YSVos",
+      "title": "What does it mean to be a Christian?",
+      "series": "living",
+      "number": 5
+    },
+    {
+      "youtube": "IG2kkExMWT8",
+      "title": "Is Jesus God?",
+      "series": "apologetics",
+      "number": 4
+    },
+    {
+      "youtube": "aYvLZUP68V0",
+      "title": "If God is good, why do bad things happen?",
+      "series": "apologetics",
+      "number": 3
+    },
+    {
+      "youtube": "643_sa-Vz34",
+      "title": "What is the Bible?",
+      "series": "bible",
+      "number": 2
+    },
+    {
+      "youtube": "ome3eGuhMhY",
+      "number": 1,
+      "title": "Why the name \"Yet I Will Rejoice\"?",
+      "series": null
+    },
+    {
+      "youtube": "pvZVWsJhHF8",
+      "title": "The sanctity of life",
+      "series": "guest",
+      "guest": "Alyssa Dwire"
+    },
+    {
+      "youtube": "uxXOhgkJwAM",
+      "title": "Using your gifts",
+      "series": "guest",
+      "guest": "Alyssa Dwire"
+    },
+    {
+      "youtube": "P2zqT1v51MU",
+      "title": "Sharing the Gospel",
+      "series": "guest",
+      "guest": "Ryland Morriasse"
+    },
+    {
+      "youtube": "BeXmg09MDFM",
+      "title": "Calling",
+      "series": "guest",
+      "guest": "Ben Laravee"
+    },
+    {
+      "youtube": "fZ_oqhG2CRs",
+      "title": "Life on mission",
+      "series": "guest",
+      "guest": "Andi Custer"
+    },
+    {
+      "youtube": "gKcj687g8zA",
+      "title": "Christian values in government",
+      "series": "guest",
+      "guest": "Jeff Anderson"
+    },
+    {
+      "youtube": "3GU5HRPZbqk",
+      "title": "Unity in the church",
+      "series": "guest",
+      "guest": "Paden Rogers"
+    },
+    {
+      "youtube": "jk0USaCssbE",
+      "title": "Called to ministry",
+      "series": "guest",
+      "guest": "Sylvie Moss"
+    }
+  ]
+}
