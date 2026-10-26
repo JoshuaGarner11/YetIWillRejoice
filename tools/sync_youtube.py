@@ -17,11 +17,15 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-CHANNEL_ID = "UCKFDMGEEfibkeCgHDhESWvg"
-FEED = f"https://www.youtube.com/feeds/videos.xml?channel_id={CHANNEL_ID}"
+HANDLE = "@YetIWillRejoice"
+FEED = "https://www.youtube.com/feeds/videos.xml?channel_id={}"
 DATA = Path(__file__).resolve().parent.parent / "data" / "episodes.json"
 HOST = "Brandon Anderson"
-UA = {"User-Agent": "Mozilla/5.0 (YIWR site sync)", "Accept-Language": "en-US,en;q=0.9"}
+UA = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cookie": "CONSENT=YES+1; SOCS=CAI",
+}
 NS = {
     "a": "http://www.w3.org/2005/Atom",
     "yt": "http://www.youtube.com/xml/schemas/2015",
@@ -69,6 +73,17 @@ def is_short(vid):
         return False
 
 
+def channel_id():
+    """Look up the channel id behind the @handle, so the feed is always the podcast's own channel."""
+    page = fetch(f"https://www.youtube.com/{HANDLE}")
+    for pattern in (r'<link rel="canonical" href="https://www\.youtube\.com/channel/(UC[\w-]{22})"',
+                    r'"externalId":"(UC[\w-]{22})"', r'"channelId":"(UC[\w-]{22})"'):
+        m = re.search(pattern, page)
+        if m:
+            return m.group(1)
+    raise RuntimeError(f"no channel id found on the {HANDLE} page ({len(page)} bytes)")
+
+
 def watch_details(vid):
     """Description and publish date from the watch page, or {} if YouTube won't say."""
     try:
@@ -80,6 +95,8 @@ def watch_details(vid):
     m = re.search(r'"shortDescription":("(?:[^"\\]|\\.)*")', page)
     if m:
         out["description"] = json.loads(m.group(1))
+    else:
+        print(f"  no description on watch page for {vid} ({len(page)} bytes)", file=sys.stderr)
     m = re.search(r'"(?:publishDate|uploadDate)":"(\d{4}-\d{2}-\d{2})', page)
     if m:
         out["date"] = m.group(1)
@@ -125,7 +142,9 @@ def main():
     changed = False
 
     try:
-        root = ET.fromstring(fetch(FEED))
+        cid = channel_id()
+        print(f"{HANDLE} is channel {cid}")
+        root = ET.fromstring(fetch(FEED.format(cid)))
     except Exception as e:
         print(f"Could not read the YouTube feed: {e}", file=sys.stderr)
         return 0

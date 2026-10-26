@@ -250,6 +250,7 @@ def page(root, path, title, description, body, nav="", og_image=None, jsonld=Non
         <li><a href="{link(root, 'about/')}">About the show</a></li>
         <li><a href="{link(root, 'ask/')}">Ask a question</a></li>
         <li><a href="{GIVE}" target="_blank" rel="noopener">Support the show</a></li>
+        <li><a href="{link(root, 'links/')}">All our links</a></li>
       </ul>
     </div>
     <div>
@@ -569,6 +570,53 @@ def ask_page():
                 body, nav="ask")
 
 
+def links_page(eps):
+    """Link-in-bio page for Instagram and TikTok profiles, in place of Linktree."""
+    root = "../"
+    latest = eps[0]
+    rows = [
+        ("Newest episode: " + latest["title"], link(root, f"episodes/{latest['slug']}/"), "feature"),
+        ("Ask a question", link(root, "ask/"), ""),
+        ("Browse every episode", link(root, "episodes/"), ""),
+    ] + [(f"Listen on {n}" if n != "YouTube" else "Subscribe on YouTube", u, "") for n, u in PLATFORMS] + [
+        ("Support the show", GIVE, ""),
+    ] + [(n, u, "social") for n, u in SOCIAL if n != "YouTube"]
+    items = "".join(
+        f'<li class="{c}"><a href="{u}"{"" if u.startswith(root) else " target=\"_blank\" rel=\"noopener\""}>{esc(t)}</a></li>'
+        for t, u, c in rows
+    )
+    css = asset_hash("assets/css/site.css")
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yet I Will Rejoice · Links</title>
+<meta name="description" content="Listen, subscribe, ask a question and follow Yet I Will Rejoice.">
+<link rel="canonical" href="{SITE_URL}/links/">
+<meta property="og:title" content="Yet I Will Rejoice">
+<meta property="og:description" content="Listen, subscribe, ask a question and follow Yet I Will Rejoice.">
+<meta property="og:image" content="{SITE_URL}/assets/img/og.png">
+<meta name="theme-color" content="#141311">
+<link rel="icon" href="{root}assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap">
+<link rel="stylesheet" href="{root}assets/css/site.css?v={css}">
+</head>
+<body class="links-page">
+<main class="links">
+  <a class="links-logo" href="{link(root, '')}"><img src="{root}assets/img/logo-318-white.png" alt="Yet I Will Rejoice" width="837" height="757"></a>
+  <h1>Hard questions. Honest answers.</h1>
+  <p>A weekly podcast with {HOST}, answering life’s hardest questions from Scripture.</p>
+  <ul>{items}</ul>
+  <p class="links-foot"><a href="{link(root, '')}">yetiwillrejoice.org</a> · A podcast from <a href="{DARE}" target="_blank" rel="noopener">Dare Ministries</a></p>
+</main>
+</body>
+</html>
+"""
+
+
 def not_found():
     root = "/" if not PREVIEW else ""
     body = f"""
@@ -602,6 +650,7 @@ def main():
         write(f"episodes/{e['slug']}/index.html", episode_page(e, eps, series))
     write("about/index.html", about_page())
     write("ask/index.html", ask_page())
+    write("links/index.html", links_page(eps))
     write("404.html", not_found())
     urls = ["", "episodes/", "about/", "ask/"] + [f"episodes/{e['slug']}/" for e in eps]
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

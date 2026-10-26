@@ -5,8 +5,8 @@ The website for *Yet I Will Rejoice*, a podcast from Dare Ministries hosted by B
 ## How it works
 
 - `data/episodes.json` holds every episode: YouTube id, title, series, episode number, co-host or guest, date and description.
-- `tools/build.py` turns that file into the static site in `_site/` (home, episode library, one page per episode, about, ask a question, sitemap).
-- `tools/sync_youtube.py` reads the YouTube channel's public feed and adds new uploads to `episodes.json`. It skips Shorts and fills in descriptions, dates and co-hosts that are missing.
+- `tools/build.py` turns that file into the static site in `_site/` (home, episode library, one page per episode, about, ask a question, a `/links/` page for Instagram and TikTok bios, sitemap).
+- `tools/sync_youtube.py` looks up the @YetIWillRejoice channel, reads its public feed and adds new uploads to `episodes.json`. It skips Shorts and fills in descriptions, dates and co-hosts that are missing.
 - `.github/workflows/deploy.yml` runs the sync every morning, commits any new episodes, builds, and publishes to GitHub Pages. It also runs on every push and can be run by hand from the Actions tab.
 
 ## Common edits
