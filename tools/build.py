@@ -75,6 +75,8 @@ def load():
     eps = [e for e in data["episodes"] if e["youtube"] not in set(data.get("ignore", [])) and not e.get("hidden")]
     seen = set()
     for e in eps:
+        if e.get("series") == "live" and e.get("date"):
+            e["title"] = f"Ask Away! Live Q&A, {fmt_date(e['date'])}"
         base = slugify(e["title"]) or e["youtube"].lower()
         slug, n = base, 2
         while slug in seen:
@@ -106,17 +108,26 @@ def ep_meta(e, with_series=True):
     return " · ".join(esc(b) for b in bits)
 
 
+BOILERPLATE = re.compile(r"^\s*(to ask a question|follow us|listen to yet i will rejoice|support (us|the show)|give to|subscribe|meet our team|our vision|scripture (taken|quotations))", re.I)
+
+
+def description_paras(e):
+    """The YouTube description in paragraphs, minus hashtags and the standard follow/listen footer."""
+    lines = [ln for ln in (e.get("description") or "").splitlines() if not re.fullmatch(r"\s*(#\w+\s*)+", ln)]
+    paras = [p.strip() for p in re.split(r"\n\s*\n", "\n".join(lines)) if p.strip()]
+    return [p for p in paras if not BOILERPLATE.match(p)]
+
+
 def description_html(e):
-    """YouTube descriptions, minus hashtags and timestamps lists, as paragraphs."""
-    text = (e.get("description") or "").strip()
+    """YouTube descriptions as paragraphs, or a plain line when there isn't one yet."""
+    paras = description_paras(e)
+    text = "\n\n".join(paras)
     if not text and e.get("guest"):
         return f"<p>{HOST} sits down with {esc(e['guest'])} to talk about {esc(e['title'][0].lower() + e['title'][1:])}.</p>"
     if not text:
         who = f"{HOST} and {e['cohost']}" if e.get("cohost") else (f"{HOST} and {e['guest']}" if e.get("guest") else HOST)
         verb = "takes" if who == HOST else "take"
         return f"<p>{esc(who)} {verb} on the question <em>{esc(e['title'])}</em> and open the Bible for an honest answer.</p>".replace("and open", "and opens" if who == HOST else "and open")
-    lines = [ln for ln in text.splitlines() if not re.fullmatch(r"\s*(#\w+\s*)+", ln)]
-    paras = re.split(r"\n\s*\n", "\n".join(lines).strip())
     out = []
     for p in paras:
         p = esc(p.strip())
@@ -126,8 +137,8 @@ def description_html(e):
 
 
 def excerpt(e, n=180):
-    text = re.sub(r"https?://\S+|#\w+", "", e.get("description") or "").strip()
-    text = re.split(r"\n\s*\n", text)[0].replace("\n", " ") if text else ""
+    paras = description_paras(e)
+    text = re.sub(r"https?://\S+", "", paras[0]).replace("\n", " ").strip() if paras else ""
     if not text and e.get("guest"):
         return f"{HOST} sits down with {e['guest']} to talk about {e['title'][0].lower() + e['title'][1:]}."
     if not text:
@@ -273,10 +284,11 @@ def page(root, path, title, description, body, nav="", og_image=None, jsonld=Non
 
 def home(eps, series):
     root = ""
-    latest = eps[0]
+    shows = [e for e in eps if e.get("series") != "live"]
+    latest = shows[0]
     by_id = {e["youtube"]: e for e in eps}
     start = [by_id[i] for i in START_HERE if i in by_id]
-    recent = [e for e in eps[1:] if e not in start][:6]
+    recent = [e for e in shows[1:] if e not in start][:6]
     series_cards = "".join(
         f"""<a class="series-card" href="{link(root, 'episodes/')}#{s['key']}">
   <span class="series-name">{esc(s['name'])}</span>
@@ -573,7 +585,7 @@ def ask_page():
 def links_page(eps):
     """Link-in-bio page for Instagram and TikTok profiles, in place of Linktree."""
     root = "../"
-    latest = eps[0]
+    latest = next(e for e in eps if e.get("series") != "live")
     rows = [
         ("Newest episode: " + latest["title"], link(root, f"episodes/{latest['slug']}/"), "feature"),
         ("Ask a question", link(root, "ask/"), ""),

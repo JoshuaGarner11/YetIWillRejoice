@@ -34,6 +34,7 @@ NS = {
 
 # New uploads get a series from their title; anything unmatched shows under "All episodes".
 SERIES_RULES = [
+    (r"live q&a|ask away", "live"),
     (r"armou?r of god", "armor"),
     (r"\bis\b.*\b(a )?sin(ful)?\b|\bsin\b", "sin"),
     (r"mormon|jehovah|islam|muslim|catholic|atheis|worldview|world view", "worldview"),
@@ -166,6 +167,9 @@ def main():
                 print(f"skip short {vid}: {title}")
                 continue
             ep = {"youtube": vid, "title": clean_title(title), "series": guess_series(title)}
+            m = re.search(r"special guests? ((?:[A-Z][a-zA-Z'’\-]+ ?){2,3})", desc)
+            if m and not ep["series"]:
+                ep["series"], ep["guest"] = "guest", m.group(1).strip()
             n = guess_number(title, desc)
             if n:
                 ep["number"] = n
