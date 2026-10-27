@@ -11,6 +11,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
@@ -51,5 +52,23 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # If Pages is still set to "Deploy from a branch", every push also starts a
+      # branch build that publishes the README. Wait for it so this deploy lands last.
+      - name: Wait for any branch-based Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 20
+          for i in $(seq 1 36); do
+            busy=0
+            for st in queued in_progress; do
+              n=$(gh api "repos/${{ github.repository }}/actions/runs?status=$st&per_page=50" \
+                --jq '[.workflow_runs[] | select(.name == "pages build and deployment")] | length')
+              busy=$((busy + n))
+            done
+            [ "$busy" -eq 0 ] && break
+            echo "Branch-based Pages build still running, waiting..."
+            sleep 10
+          done
       - id: deployment
         uses: actions/deploy-pages@v4
