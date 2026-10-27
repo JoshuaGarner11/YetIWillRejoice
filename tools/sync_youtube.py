@@ -220,9 +220,10 @@ def main():
                 print(f"skip short {vid}: {title}")
                 continue
             ep = {"youtube": vid, "title": clean_title(title), "series": "live" if v["live"] else guess_series(title)}
-            m = re.search(r"special guests? ((?:[A-Z][a-zA-Z'’\-]+ ?){2,3})", desc)
-            if m and not ep["series"]:
-                ep["series"], ep["guest"] = "guest", m.group(1).strip()
+            m = re.search(r"(?i:special guests?) ((?:[A-Z][a-zA-Z'’\-]+ ?){2,3})", f"{title}\n{desc}")
+            if m:
+                ep["guest"] = m.group(1).strip()
+                ep["series"] = ep["series"] or "guest"
             n = guess_number(title, desc)
             if n:
                 ep["number"] = n
