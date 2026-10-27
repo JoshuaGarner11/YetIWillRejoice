@@ -26,6 +26,8 @@ jobs:
           python-version: "3.12"
       - name: Pull new episodes from YouTube
         run: python3 tools/sync_youtube.py
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
       - name: Save new episodes to the repo
         run: |
           if ! git diff --quiet data/episodes.json; then

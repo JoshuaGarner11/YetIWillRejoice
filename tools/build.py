@@ -75,7 +75,7 @@ def load():
     eps = [e for e in data["episodes"] if e["youtube"] not in set(data.get("ignore", [])) and not e.get("hidden")]
     seen = set()
     for e in eps:
-        if e.get("series") == "live" and e.get("date"):
+        if e.get("series") == "live" and e.get("date") and re.fullmatch(r"\s*ask away!?\s*live q&a!?\s*", e["title"], re.I):
             e["title"] = f"Ask Away! Live Q&A, {fmt_date(e['date'])}"
         base = slugify(e["title"]) or e["youtube"].lower()
         slug, n = base, 2

@@ -10,14 +10,17 @@ fills empty fields. To hide a video from the site, add its YouTube id to "ignore
 """
 import html
 import json
+import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 HANDLE = "@YetIWillRejoice"
+API_KEY = os.environ.get("YOUTUBE_API_KEY", "").strip()
 FEED = "https://www.youtube.com/feeds/videos.xml?channel_id={}"
 DATA = Path(__file__).resolve().parent.parent / "data" / "episodes.json"
 HOST = "Brandon Anderson"
@@ -135,6 +138,59 @@ def clean_title(title):
     return title.strip()
 
 
+def feed_videos(cid):
+    """Latest uploads from the public RSS feeds. Each feed holds 15 videos, so read the
+    channel feed plus the separate long-form (UULF) and livestream (UULV) playlists."""
+    rest = cid[2:]
+    feeds = [(f"channel_id={cid}", False), (f"playlist_id=UULF{rest}", False), (f"playlist_id=UULV{rest}", True)]
+    seen = {}
+    for query, live in feeds:
+        try:
+            root = ET.fromstring(fetch(f"https://www.youtube.com/feeds/videos.xml?{query}"))
+        except Exception as e:
+            print(f"  feed {query} failed: {e}", file=sys.stderr)
+            continue
+        for entry in root.findall("a:entry", NS):
+            vid = entry.findtext("yt:videoId", namespaces=NS)
+            if not vid:
+                continue
+            v = seen.setdefault(vid, {
+                "id": vid,
+                "title": entry.findtext("a:title", namespaces=NS) or "",
+                "date": (entry.findtext("a:published", namespaces=NS) or "")[:10],
+                "description": entry.findtext("media:group/media:description", namespaces=NS) or "",
+                "live": False,
+            })
+            v["live"] = v["live"] or live
+    return list(seen.values())
+
+
+def api_videos(cid):
+    """Every upload, via the YouTube Data API. Used when a YOUTUBE_API_KEY secret is set."""
+    def get(path, **params):
+        params["key"] = API_KEY
+        return json.loads(fetch("https://www.googleapis.com/youtube/v3/" + path + "?" + urllib.parse.urlencode(params)))
+
+    ids, token = [], None
+    while True:
+        page = get("playlistItems", part="contentDetails", playlistId="UU" + cid[2:], maxResults=50, **({"pageToken": token} if token else {}))
+        ids += [i["contentDetails"]["videoId"] for i in page.get("items", [])]
+        token = page.get("nextPageToken")
+        if not token:
+            break
+    out = []
+    for i in range(0, len(ids), 50):
+        page = get("videos", part="snippet,liveStreamingDetails", id=",".join(ids[i:i + 50]))
+        for item in page.get("items", []):
+            sn = item["snippet"]
+            out.append({
+                "id": item["id"], "title": sn.get("title", ""), "date": sn.get("publishedAt", "")[:10],
+                "description": sn.get("description", ""), "live": "liveStreamingDetails" in item,
+            })
+    print(f"  API returned {len(out)} uploads")
+    return out
+
+
 def main():
     data = json.loads(DATA.read_text())
     episodes = data["episodes"]
@@ -145,18 +201,15 @@ def main():
     try:
         cid = channel_id()
         print(f"{HANDLE} is channel {cid}")
-        root = ET.fromstring(fetch(FEED.format(cid)))
+        videos = api_videos(cid) if API_KEY else feed_videos(cid)
     except Exception as e:
-        print(f"Could not read the YouTube feed: {e}", file=sys.stderr)
+        print(f"Could not read YouTube: {e}", file=sys.stderr)
         return 0
 
-    for entry in root.findall("a:entry", NS):
-        vid = entry.findtext("yt:videoId", namespaces=NS)
-        if not vid or vid in ignore:
+    for v in videos:
+        vid, title, date, desc = v["id"], v["title"], v["date"], v["description"]
+        if vid in ignore:
             continue
-        title = entry.findtext("a:title", namespaces=NS) or ""
-        date = (entry.findtext("a:published", namespaces=NS) or "")[:10]
-        desc = entry.findtext("media:group/media:description", namespaces=NS) or ""
 
         ep = by_id.get(vid)
         if ep is None:
@@ -166,7 +219,7 @@ def main():
                 changed = True
                 print(f"skip short {vid}: {title}")
                 continue
-            ep = {"youtube": vid, "title": clean_title(title), "series": guess_series(title)}
+            ep = {"youtube": vid, "title": clean_title(title), "series": "live" if v["live"] else guess_series(title)}
             m = re.search(r"special guests? ((?:[A-Z][a-zA-Z'’\-]+ ?){2,3})", desc)
             if m and not ep["series"]:
                 ep["series"], ep["guest"] = "guest", m.group(1).strip()
