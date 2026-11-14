@@ -34,6 +34,7 @@ PLATFORMS = [
 ]
 SOCIAL = [
     ("Instagram", "https://www.instagram.com/yetiwillrejoicepodcast/"),
+    ("TikTok", "https://www.tiktok.com/@yetiwillrejoice"),
     ("Facebook", "https://www.facebook.com/profile.php?id=61558877346229"),
     ("YouTube", YOUTUBE),
 ]
